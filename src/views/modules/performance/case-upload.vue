@@ -32,7 +32,7 @@
     },
     methods: {
       init (id) {
-        this.url = this.$http.adornUrl(`/performance/case/upload?token=${this.$cookie.get('token')}`)
+        this.url = this.$http.adornUrl(`/performance/performancecase/upload?token=${this.$cookie.get('token')}`)
         this.visible = true
       },
       // 上传之前
