@@ -16,6 +16,7 @@
       border
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
+      @select="getSelectedRow"
       style="width: 100%;">
       <el-table-column
         type="selection"
@@ -86,6 +87,8 @@
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
+
+    <div style="text-align: center;padding-top:16px;">（说明：请上传测试脚本及附件，要求jmx脚本所关联的附件或参数文件只设文件名，不设置路径；同一用例下如果上传同名文件既为覆盖同名文件）</div>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
     <!-- 弹窗, 上传文件 -->
@@ -107,9 +110,17 @@
         pageSize: 10,
         totalPage: 0,
         dataListLoading: false,
+        getSelectedRow: [],
         dataListSelections: [],
         addOrUpdateVisible: false,
-        uploadVisible: false
+        uploadVisible: false,
+        visible: false,
+        url: '',
+        num: 0,
+        successNum: 0,
+        fileList: [],
+        id: '',
+        sum: 0,
       }
     },
     components: {
@@ -153,6 +164,7 @@
         this.pageIndex = val
         this.getDataList()
       },
+
       // 多选
       selectionChangeHandle (val) {
         this.dataListSelections = val
@@ -166,9 +178,19 @@
       },
        // 上传文件
       uploadHandle (id) {
-        this.uploadVisible = true
+        var caseId = id ? [id] : this.dataListSelections.map(item => {
+            return item.caseId
+        })
+        this.uploadVisible = true;
         this.$nextTick(() => {
-          this.$refs.upload.init()
+          if(caseId.length == 1){
+            this.$refs.upload.init(caseId)
+          } else {
+            this.$message({
+              message: '只能选择一条用例!',
+              duration: 1500
+            })
+          }
         })
       },
       // 删除

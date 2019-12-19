@@ -11,11 +11,17 @@
       :on-success="successHandle"
       multiple
       :file-list="fileList"
+      :auto-upload="true"
       style="text-align: center;">
       <i class="el-icon-upload"></i>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-      <div class="el-upload__tip" slot="tip">只支持jpg、png、gif格式的图片！</div>
+      <div class="el-upload__tip" slot="tip">只支持 "jpg, jpeg, png, gif, bmp, txt, sql, log, xlsx, xls, pdf, docx, doc,
+        pptx, csv, jar, war, zip, rar, tag.gz, chm, ink, jmx, ftl, htm, html, jsp" 的文件扩展名.</div>
     </el-upload>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="visible = false">取消</el-button>
+      <el-button type="primary" @click="submitUpload">确定上传</el-button>
+    </div>
   </el-dialog>
 </template>
 
@@ -23,28 +29,113 @@
   export default {
     data () {
       return {
-        visible: false,
+        visible: true,
         url: '',
         num: 0,
         successNum: 0,
-        fileList: []
+        fileList: [],
+        ids: '',
       }
     },
     methods: {
-      init (id) {
-        this.url = this.$http.adornUrl(`/performance/performancecase/upload?token=${this.$cookie.get('token')}`)
+      // 上传文件
+
+      init (caseId) {
+        console.log('-------测试用例id111-------', caseId)
+        this.caseId = caseId
+        //this.url = this.$http.adornUrl(`/performance/performancecase/upload?token=${this.$cookie.get('token')}`)
         this.visible = true
+        var img = ['jpg','jpeg', 'png','gif', 'bmp']; //图片
+        var txt = ['txt','sql','log'];  //文字
+        var out = ['cfg','dat','hlp','tmp'];  //文字
+        var ott = ['xlsx','xls','pdf','docx','doc','pptx','csv'];    //表格，幻灯片，WORD，PDF
+        var sin = ['mpg', 'mpeg', 'avi', 'rm', 'rmvb','mov', 'wmv','asf', 'dat', 'mp4']; //视频
+        var ein = ['cd','ogg','mp3','asf','wma','wav','mp3pro','rm','real','ape','module','midi','vqf']; //音频
+        var spe = ['jar','war','zip','rar','tag.gz'];//压缩包
+        var exe = ['exe','bat','com','msi']; //可执行文件
+        var zat = ['chm','ink','jmx'];    //特殊文件
+        var viw = ['ftl','htm','html','jsp']; //页面
+        var rol = ['js','css'];
+        //var url = `/performance/performancecase/upload?token=${this.$cookie.get('token')}`;
+        //this.url = this.$http.adornUrl(`/performance/performancecase/upload`),
+
       },
+
+
       // 上传之前
       beforeUploadHandle (file) {
-        if (file.type !== 'image/jpg' && file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif') {
-          this.$message.error('只支持jpg、png、gif格式的图片！')
+
+        console.log('-------文件----', file)
+        console.log('-------文件类型111----', file.type)
+        // file.type !== 'image/jpg' && file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif'
+        if (file.type !== 'image/jpg' && file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif' &&
+            file.type !== 'image/bmp' && file.type !== 'text/plain' && file.type !== '' && file.type !== 'application/pdf' &&
+            file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' && file.type !== 'application/zip' &&
+            file.type !== 'application/wps-writer' && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+            file.type !== 'application/vnd.openxmlformats-officedocument.presentationml.presentation' && file.type !== 'application/x-gzip' &&
+            file.type !== 'application/java-archive' && file.type !== 'text/html' && file.type !== 'text/htm') {
+          this.$message.error('只支持 "jpg, jpeg, png, gif, bmp, txt, sql, log, xlsx, xls, pdf, docx, doc, pptx, csv, jar, war, zip, rar, tag.gz, chm, ink, jmx, ftl, htm, html, jsp" 的文件扩展名.')
           return false
         }
+        if (file.size == 0){
+            this.$message.error('上传的文件不能为空!')
+            return false
+
+        }
         this.num++
+        this.fileName = file.name;
+        this.files = file;
+        return false    // 返回fasle不会自动上传
       },
+
+      submitUpload() {
+        console.log('-------文件类型33----', this.files)
+        console.log('-------文件名称33----', this.fileName)
+        console.log('-------测试用例id33-------', this.caseId)
+        if (this.fileName == "") {
+          this.message.warning('请选择要上传的文件!')
+          return false
+        }
+        let fileFormData = new FormData();
+        fileFormData.append('file', this.files, this.fileName); //filename是键，file是值，就是要传的文件，test.zip是要传的文件名
+        console.log("-------文件的内容-------", fileFormData)
+        let requestConfig = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        }
+        // this.$http({
+        //   url: this.$http.adornUrl(`/performance/performancecase/upload?token=${this.$cookie.get('token')}`),
+        //   method: 'post',
+        //   data: this.$http.adornData({
+        //     'caseId': this.caseId,
+        //     'data': fileFormData,
+        //   },
+        //      true,
+        //      'form'
+        //   )
+        // })
+          this.$http.post(`http://localhost:8081/renren-fast/performance/performancecase/upload?token=${this.$cookie.get('token')}`,this.caseId, fileFormData, requestConfig).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.visible = false
+                this.$emit('refreshDataList')
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      },
+
       // 上传成功
       successHandle (response, file, fileList) {
+        console.log('-------文件类型22----', file)
+        console.log('-------文件类型222----', fileList)
         this.fileList = fileList
         this.successNum++
         if (response && response.code === 0) {
@@ -68,4 +159,6 @@
       }
     }
   }
+
+
 </script>
