@@ -26,91 +26,49 @@
         prop="fileId"
         header-align="center"
         align="center"
-        label="">
+        label="文件ID">
       </el-table-column>
       <el-table-column
-        prop="caseId"
+        prop="caseName"
         header-align="center"
         align="center"
         label="所关联的用例">
       </el-table-column>
       <el-table-column
-        prop="slaveId"
-        header-align="center"
-        align="center"
-        label="所关联的同步过的slave子节点">
-      </el-table-column>
-      <el-table-column
         prop="originName"
         header-align="center"
         align="center"
-        label="上传的文件名带后缀">
-      </el-table-column>
-      <el-table-column
-        prop="fileName"
-        header-align="center"
-        align="center"
-        label="防止汉字编码错误实际保存的文件名带后缀">
-      </el-table-column>
-      <el-table-column
-        prop="fileMd5"
-        header-align="center"
-        align="center"
-        label="文件的MD5对于参数化文件有效主要用于节点的参数化文件校验">
+        label="文件名称">
       </el-table-column>
       <el-table-column
         prop="status"
         header-align="center"
         align="center"
-        label="状态  0：初始状态  1：正在运行  2：成功执行  3：运行出现异常   -1：不被搜索出来">
+        label="状态">
       </el-table-column>
       <el-table-column
         prop="reportStatus"
         header-align="center"
         align="center"
-        label="状态  0：保存测试报告原始文件  1：不需要测试报告">
+        label="测试报告">
       </el-table-column>
       <el-table-column
         prop="webchartStatus"
         header-align="center"
         align="center"
-        label="状态  0：需要前端监控  1：不需要前端监控">
+        label="Chart监控">
       </el-table-column>
       <el-table-column
         prop="debugStatus"
         header-align="center"
         align="center"
-        label="状态  0：关闭debug  1：开始debug调试模式">
-      </el-table-column>
-      <el-table-column
-        prop="duration"
-        header-align="center"
-        align="center"
-        label="期间，执行时间，单位秒，脚本执行多久停止，0代表永远执行">
+        label="调试状态">
       </el-table-column>
       <el-table-column
         prop="addTime"
         header-align="center"
         align="center"
         label="创建时间">
-      </el-table-column>
-      <el-table-column
-        prop="addBy"
-        header-align="center"
-        align="center"
-        label="提交用户id">
-      </el-table-column>
-      <el-table-column
-        prop="updateTime"
-        header-align="center"
-        align="center"
-        label="修改时间">
-      </el-table-column>
-      <el-table-column
-        prop="updateBy"
-        header-align="center"
-        align="center"
-        label="修改用户id">
       </el-table-column>
       <el-table-column
         fixed="right"

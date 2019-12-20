@@ -26,6 +26,7 @@
 </template>
 
 <script>
+  import axios from 'axios';
   export default {
     data () {
       return {
@@ -88,7 +89,7 @@
         return false    // 返回fasle不会自动上传
       },
 
-      submitUpload() {
+      submitUpload: function () {
         console.log('-------文件类型33----', this.files)
         console.log('-------文件名称33----', this.fileName)
         console.log('-------测试用例id33-------', this.caseId)
@@ -98,24 +99,16 @@
         }
         let fileFormData = new FormData();
         fileFormData.append('file', this.files, this.fileName); //filename是键，file是值，就是要传的文件，test.zip是要传的文件名
-        console.log("-------文件的内容-------", fileFormData)
-        let requestConfig = {
+        fileFormData.append('caseId', this.caseId);
+        let headers = {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
         }
-        // this.$http({
-        //   url: this.$http.adornUrl(`/performance/performancecase/upload?token=${this.$cookie.get('token')}`),
-        //   method: 'post',
-        //   data: this.$http.adornData({
-        //     'caseId': this.caseId,
-        //     'data': fileFormData,
-        //   },
-        //      true,
-        //      'form'
-        //   )
-        // })
-          this.$http.post(`http://localhost:8081/renren-fast/performance/performancecase/upload?token=${this.$cookie.get('token')}`,this.caseId, fileFormData, requestConfig).then(({data}) => {
+
+        axios.post(`http://localhost:8081/renren-fast/performance/performancecase/upload?token=${this.$cookie.get('token')}`,
+          fileFormData,headers
+          ).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
@@ -156,7 +149,8 @@
       closeHandle () {
         this.fileList = []
         this.$emit('refreshDataList')
-      }
+      },
+
     }
   }
 
