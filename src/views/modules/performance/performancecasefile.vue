@@ -1,5 +1,5 @@
 <template>
-  <script src="../static"
+
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
@@ -17,29 +17,16 @@
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
-      <el-table-column
-        type="selection"
-        header-align="center"
-        align="center"
-        width="50">
-      </el-table-column>
-      <el-table-column
-        prop="fileId"
-        header-align="center"
-        align="center"
-        label="文件ID">
-      </el-table-column>
-      <el-table-column
-        prop="caseName"
-        header-align="center"
-        align="center"
-        label="所关联的用例">
-      </el-table-column>
-      <el-table-column
-        prop="originName"
-        header-align="center"
-        align="center"
-        label="文件名称">
+      <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+      <el-table-column prop="fileId" header-align="center" align="center" label="文件ID"></el-table-column>
+      <el-table-column prop="caseName" header-align="center" align="center" label="所关联的用例"></el-table-column>
+      <el-table-column prop="originName" header-align="center" align="center" label="文件名称">
+        <template slot-scope="scope">
+          <div>
+            {{ scope.row.originName }}
+            <a v-if="isJmx(scope.row.originName)" :href="scope.row.url">77</a>
+          </div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="status"
@@ -98,7 +85,8 @@
 </template>
 
 <script>
-  import AddOrUpdate from './performancecasefile-add-or-update'
+  import AddOrUpdate from './performancecasefile-add-or-update';
+  // import * as t from '@/utils/test.js';
   export default {
     data () {
       return {
@@ -117,10 +105,20 @@
     components: {
       AddOrUpdate
     },
+    mounted(){
+      console.log('======',t)
+    },
     activated () {
       this.getDataList()
     },
     methods: {
+      isJmx(val){
+        console.log('======val',val)
+        if(val.indexOf('.jmx') != -1){
+          return true
+        }
+        // val.indexOf('.jmx') != -1 ? true : false
+      },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true

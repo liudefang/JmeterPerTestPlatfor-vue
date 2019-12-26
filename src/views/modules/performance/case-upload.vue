@@ -35,7 +35,7 @@
         num: 0,
         successNum: 0,
         fileList: [],
-        ids: '',
+        ids: ''
       }
     },
     methods: {
@@ -103,7 +103,7 @@
         let headers = {
           headers: {
             'Content-Type': 'multipart/form-data'
-          },
+          }
         }
 
         axios.post(`http://localhost:8081/renren-fast/performance/performancecase/upload?token=${this.$cookie.get('token')}`,
@@ -149,7 +149,7 @@
       closeHandle () {
         this.fileList = []
         this.$emit('refreshDataList')
-      },
+      }
 
     }
   }

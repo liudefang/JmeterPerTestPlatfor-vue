@@ -18,23 +18,22 @@
       @selection-change="selectionChangeHandle"
       @select="getSelectedRow"
       style="width: 100%;">
-      <el-table-column
-        type="selection"
-        header-align="center"
-        align="center"
-        width="50">
-      </el-table-column>
-      <el-table-column
-        prop="caseId"
-        header-align="center"
-        align="center"
-        label="用例ID">
-      </el-table-column>
-      <el-table-column
-        prop="caseName"
-        header-align="center"
-        align="center"
-        label="用例名">
+      <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+      <el-table-column prop="caseId" header-align="center" align="center" label="用例ID"></el-table-column>
+      <el-table-column prop="caseName" header-align="center" align="center" label="用例名">
+        <template slot-scope="scope">
+          <el-icon name="caseName"></el-icon>
+          <router-link :to="{name: scope.row.caseName, params: {case_id: scope.row.caseId}}">
+            <div>
+              {{ scope.row.caseName }}
+            </div>
+
+          </router-link>
+<!--          <div>-->
+<!--&lt;!&ndash;            {{ scope.row.caseName }}&ndash;&gt;-->
+<!--            <a :href='"http://localhost:8081/renren-fast/performance/performancecase/list"'>{{ scope.row.caseName }}</a>-->
+<!--          </div>-->
+        </template>
       </el-table-column>
       <el-table-column
         prop="project"
@@ -99,6 +98,7 @@
 <script>
   import AddOrUpdate from './performancecase-add-or-update'
   import Upload from './case-upload'
+  import {getPerTestCase} from '../../../api/api'
   export default {
     data () {
       return {
@@ -120,7 +120,7 @@
         successNum: 0,
         fileList: [],
         id: '',
-        sum: 0,
+        sum: 0
       }
     },
     components: {
@@ -134,15 +134,18 @@
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
-        this.$http({
-          url: this.$http.adornUrl('/performance/performancecase/list'),
-          method: 'get',
-          params: this.$http.adornParams({
-            'page': this.pageIndex,
-            'limit': this.pageSize,
-            'key': this.dataForm.key
-          })
-        }).then(({data}) => {
+        // this.$http({
+        //   url: this.$http.adornUrl('/performance/performancecase/list'),
+        //   method: 'get',
+        //   params: this.$http.adornParams({
+        //     'page': this.pageIndex,
+        //     'limit': this.pageSize,
+        //     'key': this.dataForm.key
+        //   })
+        let self = this;
+        let params = {page: self.pageIndex, limit: self.pageSize, key: self.dataForm.key};
+        let headers = {token: self.$cookie.get('token')};
+        getPerTestCase(headers, params).then((data) => {
           if (data && data.code === 0) {
             this.dataList = data.page.list
             this.totalPage = data.page.totalCount
