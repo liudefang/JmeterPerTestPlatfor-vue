@@ -28,11 +28,12 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="status"
-        header-align="center"
-        align="center"
-        label="状态">
+      <el-table-column prop="status" header-align="center" align="center" label="状态">
+        <div>
+            <span v-if="isStatus(scope.row.originName,scope.row.status)" :class="[isChSt(scope.row.originName,scope.row.status) ? 'label-success' : 'label-danger']">{{
+              isChSt(scope.row.originName,scope.row.status)
+              }}</span>
+        </div>
       </el-table-column>
       <el-table-column
         prop="reportStatus"
@@ -40,11 +41,15 @@
         align="center"
         label="测试报告">
       </el-table-column>
-      <el-table-column
-        prop="webchartStatus"
-        header-align="center"
-        align="center"
-        label="Chart监控">
+      <el-table-column prop="webchartStatus" header-align="center" align="center" label="Chart监控">
+        <template slot-scope="scope">
+          <div>
+            <span v-if="isChSt(scope.row.originName,scope.row.webchartStatus)" :class="[isChSt(scope.row.originName,scope.row.webchartStatus) ? 'label-success' : 'label-danger']">{{
+              isChSt(scope.row.originName,scope.row.webchartStatus)
+              }}</span>
+          </div>
+        </template>
+
       </el-table-column>
       <el-table-column
         prop="debugStatus"
@@ -86,6 +91,7 @@
 
 <script>
   import AddOrUpdate from './performancecasefile-add-or-update';
+  import {getPerTestCaseInfo} from '../../../api/api'
   // import * as t from '@/utils/test.js';
   export default {
     data () {
@@ -105,11 +111,9 @@
     components: {
       AddOrUpdate
     },
-    mounted(){
-      console.log('======',t)
-    },
     activated () {
       this.getDataList()
+      //this.getDataInfo()
     },
     methods: {
       isJmx(val){
@@ -119,18 +123,64 @@
         }
         // val.indexOf('.jmx') != -1 ? true : false
       },
-      // 获取数据列表
-      getDataList () {
-        this.dataListLoading = true
-        this.$http({
-          url: this.$http.adornUrl('/performance/performancecasefile/list'),
-          method: 'get',
-          params: this.$http.adornParams({
-            'page': this.pageIndex,
-            'limit': this.pageSize,
-            'key': this.dataForm.key
-          })
-        }).then(({data}) => {
+      isStatus(name, status){
+        if
+      },
+      isChSt(name, status){
+        if(name.indexOf('.jmx') != -1){
+          console.log('======status',status)
+          if (status === 0){
+            return '启用';
+          } else if (status === 1) {
+            return '禁止';
+          }
+        }
+
+      },
+      // // 获取数据列表
+      // getDataList () {
+      //   this.dataListLoading = true
+      //   var self = this;
+      //   let params = {page: self.pageIndex, limit: self.pageSize, key: self.dataForm.key};
+      //   let headers = {
+      //     token: self.$cookie.get('token')
+      //   };
+      //   // this.$http({
+      //   //   url: this.$http.adornUrl('/performance/performancecasefile/list'),
+      //   //   method: 'get',
+      //   //   params: this.$http.adornParams({
+      //   //     'page': this.pageIndex,
+      //   //     'limit': this.pageSize,
+      //   //     'key': this.dataForm.key
+      //   //   })
+      //   // })
+      //   getPerTestCaseFile(headers, params).then((data) => {
+      //     if (data && data.code === 0) {
+      //       this.dataList = data.page.list
+      //       this.totalPage = data.page.totalCount
+      //     } else {
+      //       this.dataList = []
+      //       this.totalPage = 0
+      //     }
+      //     this.dataListLoading = false
+      //   })
+      // },
+
+      // 获取测试用例详情
+      getDataList() {
+        var self = this;
+        let params = {
+          caseId: this.$route.params.case_id,
+          page: self.pageIndex,
+          limit: self.pageSize,
+          key: self.dataForm.key
+        };
+        let headers = {
+          "Content-Type": "application/json",
+          token: self.$cookie.get('token')
+        };
+        getPerTestCaseInfo(headers, params).then((data) => {
+          console.log("--------获取的用例详情------", data)
           if (data && data.code === 0) {
             this.dataList = data.page.list
             this.totalPage = data.page.totalCount
@@ -193,6 +243,14 @@
           })
         })
       }
+    },
+    mounted () {
+      this.getDataList()
     }
   }
 </script>
+<style>
+  .label-success {
+    background-color: #5cb85c;
+  }
+</style>

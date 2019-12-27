@@ -23,10 +23,8 @@
       <el-table-column prop="caseName" header-align="center" align="center" label="用例名">
         <template slot-scope="scope">
           <el-icon name="caseName"></el-icon>
-          <router-link :to="{name: scope.row.caseName, params: {case_id: scope.row.caseId}}">
-            <div>
+          <router-link :to="{name: '测试用例详情', params: {case_id: scope.row.caseId}}">
               {{ scope.row.caseName }}
-            </div>
 
           </router-link>
 <!--          <div>-->
