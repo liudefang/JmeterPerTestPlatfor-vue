@@ -29,17 +29,22 @@
         </template>
       </el-table-column>
       <el-table-column prop="status" header-align="center" align="center" label="状态">
-        <div>
-            <span v-if="isStatus(scope.row.originName,scope.row.status)" :class="[isChSt(scope.row.originName,scope.row.status) ? 'label-success' : 'label-danger']">{{
-              isChSt(scope.row.originName,scope.row.status)
-              }}</span>
-        </div>
+        <template slot-scope="scope">
+          <div>
+              <span v-if="isStatus(scope.row.originName,scope.row.status)" :class="[isStatus(scope.row.originName,scope.row.status) ? 'label-info' : 'label-danger']">{{
+                isStatus(scope.row.originName,scope.row.status)
+                }}</span>
+          </div>
+        </template>
       </el-table-column>
-      <el-table-column
-        prop="reportStatus"
-        header-align="center"
-        align="center"
-        label="测试报告">
+      <el-table-column prop="reportStatus" header-align="center" align="center" label="测试报告">
+        <template slot-scope="scope">
+          <div>
+            <span v-if="isRpSt(scope.row.originName,scope.row.reportStatus)" :class="[isRpSt(scope.row.originName,scope.row.reportStatus) ? 'label-success' : 'label-danger']">
+              {{isRpSt(scope.row.originName,scope.row.reportStatus)}}
+            </span>
+          </div>
+        </template>
       </el-table-column>
       <el-table-column prop="webchartStatus" header-align="center" align="center" label="Chart监控">
         <template slot-scope="scope">
@@ -51,11 +56,14 @@
         </template>
 
       </el-table-column>
-      <el-table-column
-        prop="debugStatus"
-        header-align="center"
-        align="center"
-        label="调试状态">
+      <el-table-column prop="debugStatus" header-align="center" align="center" label="调试状态">
+        <template slot-scope="scope">
+          <div>
+            <span v-if="isDgSt(scope.row.originName,scope.row.debugStatus)" :class="[isDgSt(scope.row.originName,scope.row.debugStatus) ? 'label-success' : 'label-danger']">
+              {{isDgSt(scope.row.originName,scope.row.debugStatus)}}
+            </span>
+          </div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="addTime"
@@ -90,7 +98,7 @@
 </template>
 
 <script>
-  import AddOrUpdate from './performancecasefile-add-or-update';
+  import AddOrUpdate from './performancecasefile-update';
   import {getPerTestCaseInfo} from '../../../api/api'
   // import * as t from '@/utils/test.js';
   export default {
@@ -124,9 +132,41 @@
         // val.indexOf('.jmx') != -1 ? true : false
       },
       isStatus(name, status){
-        if
+        if (status === 0) {
+          return '创建成功';
+        } else if (status === 1) {
+          return '正在运行';
+        } else if (status === 2) {
+          if(name.indexOf('.jmx') != -1) {
+            return '同步成功';
+          }
+          return '执行成功';
+        } else if (status === 3) {
+          return '出现异常';
+        }
       },
       isChSt(name, status){
+        if(name.indexOf('.jmx') != -1){
+          console.log('======status',status)
+          if (status === 0){
+            return '启用';
+          } else if (status === 1) {
+            return '禁止';
+          }
+        }
+
+      },
+      isDgSt(name, status){
+        if(name.indexOf('.jmx') != -1){
+          console.log('======status',status)
+          if (status === 0){
+            return '启用';
+          } else if (status === 1) {
+            return '禁止';
+          }
+        }
+      },
+      isRpSt(name, status){
         if(name.indexOf('.jmx') != -1){
           console.log('======status',status)
           if (status === 0){
@@ -252,5 +292,14 @@
 <style>
   .label-success {
     background-color: #5cb85c;
+  }
+  .label-danger {
+    background-color: #d9534f;
+  }
+  .label-info {
+    background-color: #5bc0de;
+  }
+  .label-warning{
+    background-color:#f0ad4e;
   }
 </style>

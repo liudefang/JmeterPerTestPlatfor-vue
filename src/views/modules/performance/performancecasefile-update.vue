@@ -4,7 +4,7 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="所关联的用例" prop="caseId">
+    <el-form-item label="测试报告" prop="caseId">
       <el-input v-model="dataForm.caseId" placeholder="所关联的用例"></el-input>
     </el-form-item>
     <el-form-item label="所关联的同步过的slave子节点" prop="slaveId">
