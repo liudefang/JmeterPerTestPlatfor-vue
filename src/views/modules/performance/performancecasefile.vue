@@ -71,13 +71,10 @@
         align="center"
         label="创建时间">
       </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
+      <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
+          <el-button type="primary" size="small" @click="addOrUpdateHandle(scope.row.fileId)">启动</el-button>
+          <el-button type="primary" icon="el-icon-download" circle @click="addOrUpdateHandle(scope.row.fileId)">下载</el-button>
           <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.fileId)">修改</el-button>
           <el-button type="text" size="small" @click="deleteHandle(scope.row.fileId)">删除</el-button>
         </template>
