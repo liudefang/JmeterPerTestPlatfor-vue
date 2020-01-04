@@ -8,7 +8,7 @@
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('performance:performancecasefile:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('performance:performancecasefile:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('performance:performancecasefile:delete')" type="danger" icon="el-icon-delete" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -73,10 +73,10 @@
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="addOrUpdateHandle(scope.row.fileId)">启动</el-button>
-          <el-button type="primary" icon="el-icon-download" circle @click="addOrUpdateHandle(scope.row.fileId)">下载</el-button>
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.fileId)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.fileId)">删除</el-button>
+          <el-button type="primary" circle size="small" @click="addOrUpdateHandle(scope.row.fileId)">启动</el-button>
+          <el-button type="info" icon="el-icon-download" circle size="small" @click="addOrUpdateHandle(scope.row.fileId)">下载</el-button>
+<!--          <el-button type="primary" icon="el-icon-edit" size="small" @click="addOrUpdateHandle(scope.row.fileId)">修改</el-button>-->
+<!--      <el-button type="danger" icon="el-icon-delete" size="small" @click="deleteHandle(scope.row.fileId)">删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -84,7 +84,7 @@
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
       :current-page="pageIndex"
-      :page-sizes="[10, 20, 50, 100]"
+      :page-sizes="[10, 20, 30, 50]"
       :page-size="pageSize"
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper">
