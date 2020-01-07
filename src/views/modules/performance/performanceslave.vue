@@ -6,106 +6,29 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('performance:performanceslave:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:save')" type="primary" @click="addSlaveHandle()">新增</el-button>
         <el-button v-if="isAuth('performance:performanceslave:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
-    <el-table
-      :data="dataList"
-      border
-      v-loading="dataListLoading"
-      @selection-change="selectionChangeHandle"
-      style="width: 100%;">
-      <el-table-column
-        type="selection"
-        header-align="center"
-        align="center"
-        width="50">
+    <el-table :data="dataList" border v-loading="dataListLoading" @selection-change="selectionChangeHandle" style="width: 100%;">
+      <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+      <el-table-column prop="slaveId" header-align="center" align="center" label="节点ID"></el-table-column>
+      <el-table-column prop="slaveName" header-align="center" align="center" label="节点名称"></el-table-column>
+      <el-table-column prop="ip" header-align="center" align="center" label="IP地址"></el-table-column>
+      <el-table-column prop="jmeterPort" header-align="center" align="center" label="Jmeter链接端口"></el-table-column>
+      <el-table-column prop="userName" header-align="center" align="center" label="节点机用户名"></el-table-column>
+      <el-table-column prop="passwd" header-align="center" align="center" label="节点机密码"></el-table-column>
+      <el-table-column prop="sshPort" header-align="center" align="center" label="ssh链接端口"></el-table-column>
+      <el-table-column prop="homeDir" header-align="center" align="center" label="节点的Jmeter路径"></el-table-column>
+      <el-table-column prop="status" header-align="center" align="center" label="状态">
+        <template slot-scope="scope">
+          <div>
+              <span v-if="isStatus(scope.row.status)" v-html="isStatus(scope.row.status)">
+                </span>
+          </div>
+        </template>
       </el-table-column>
-      <el-table-column
-        prop="slaveId"
-        header-align="center"
-        align="center"
-        label="">
-      </el-table-column>
-      <el-table-column
-        prop="slaveName"
-        header-align="center"
-        align="center"
-        label="子节点名称">
-      </el-table-column>
-      <el-table-column
-        prop="ip"
-        header-align="center"
-        align="center"
-        label="ip地址">
-      </el-table-column>
-      <el-table-column
-        prop="jmeterPort"
-        header-align="center"
-        align="center"
-        label="Jmeter链接端口号">
-      </el-table-column>
-      <el-table-column
-        prop="userName"
-        header-align="center"
-        align="center"
-        label="节点机用户名">
-      </el-table-column>
-      <el-table-column
-        prop="passwd"
-        header-align="center"
-        align="center"
-        label="节点机密码">
-      </el-table-column>
-      <el-table-column
-        prop="sshPort"
-        header-align="center"
-        align="center"
-        label="ssh链接端口号">
-      </el-table-column>
-      <el-table-column
-        prop="homeDir"
-        header-align="center"
-        align="center"
-        label="子节点的Jmeter路径">
-      </el-table-column>
-      <el-table-column
-        prop="status"
-        header-align="center"
-        align="center"
-        label="状态  0：禁用   1：正常">
-      </el-table-column>
-      <el-table-column
-        prop="weight"
-        header-align="center"
-        align="center"
-        label="slave节点机的权重，取值在1-99999，slave的权重可以大于或者小于master">
-      </el-table-column>
-      <el-table-column
-        prop="addTime"
-        header-align="center"
-        align="center"
-        label="创建时间">
-      </el-table-column>
-      <el-table-column
-        prop="addBy"
-        header-align="center"
-        align="center"
-        label="提交用户id">
-      </el-table-column>
-      <el-table-column
-        prop="updateTime"
-        header-align="center"
-        align="center"
-        label="修改时间">
-      </el-table-column>
-      <el-table-column
-        prop="updateBy"
-        header-align="center"
-        align="center"
-        label="修改用户id">
-      </el-table-column>
+      <el-table-column prop="weight" header-align="center" align="center" label="slave节点机的权重(%)"></el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
@@ -113,7 +36,7 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.slaveId)">修改</el-button>
+<!--          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.slaveId)">修改</el-button>-->
           <el-button type="text" size="small" @click="deleteHandle(scope.row.slaveId)">删除</el-button>
         </template>
       </el-table-column>
@@ -128,12 +51,13 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <add-or-update v-if="addOrUpdateVisible" ref="addSlave" @refreshDataList="getDataList"></add-or-update>
   </div>
 </template>
 
 <script>
-  import AddOrUpdate from './performanceslave-add-or-update'
+  import AddSlave from './performanceslave-add'
+  import {getPerTestSlave} from '../../../api/api'
   export default {
     data () {
       return {
@@ -150,24 +74,30 @@
       }
     },
     components: {
-      AddOrUpdate
+      AddSlave
     },
     activated () {
       this.getDataList()
     },
     methods: {
+      isStatus(status){
+        if (status === 0) {
+          return '<span class="label-info">警用</span>';
+        } else if (status === 1) {
+          return '<span class="label-success">启用</span>';
+        } else if (status === 2) {
+          return '<span class="label-info">变更中</span>';
+        } else if (status === 3) {
+          return '<span class="label-danger">出现异常</span>';
+        }
+      },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
-        this.$http({
-          url: this.$http.adornUrl('/performance/performanceslave/list'),
-          method: 'get',
-          params: this.$http.adornParams({
-            'page': this.pageIndex,
-            'limit': this.pageSize,
-            'key': this.dataForm.key
-          })
-        }).then(({data}) => {
+        let self = this;
+        let params = {page: self.pageIndex, limit: self.pageSize, key: self.dataForm.key};
+        let headers = {token: self.$cookie.get('token')};
+        getPerTestSlave(headers, params).then((data) => {
           if (data && data.code === 0) {
             this.dataList = data.page.list
             this.totalPage = data.page.totalCount
@@ -194,10 +124,10 @@
         this.dataListSelections = val
       },
       // 新增 / 修改
-      addOrUpdateHandle (id) {
+      addSlaveHandle () {
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
+          this.$refs.addSlave.init()
         })
       },
       // 删除
@@ -233,3 +163,17 @@
     }
   }
 </script>
+<style>
+  .label-success {
+    background-color: #5cb85c;
+  }
+  .label-danger {
+    background-color: #d9534f;
+  }
+  .label-info {
+    background-color: #5bc0de;
+  }
+  .label-warning{
+    background-color:#f0ad4e;
+  }
+</style>

@@ -31,17 +31,16 @@
       <el-table-column prop="status" header-align="center" align="center" label="状态">
         <template slot-scope="scope">
           <div>
-              <span v-if="isStatus(scope.row.originName,scope.row.status)" :class="[isStatus(scope.row.originName,scope.row.status) ? 'label-info' : 'label-danger']">{{
-                isStatus(scope.row.originName,scope.row.status)
-                }}</span>
+              <span v-if="isStatus(scope.row.originName,scope.row.status)" v-html="isStatus(scope.row.originName,scope.row.status)">
+
+              </span>
           </div>
         </template>
       </el-table-column>
       <el-table-column prop="reportStatus" header-align="center" align="center" label="测试报告">
         <template slot-scope="scope">
           <div>
-            <span v-if="isRpSt(scope.row.originName,scope.row.reportStatus)" :class="[isRpSt(scope.row.originName,scope.row.reportStatus) ? 'label-success' : 'label-danger']">
-              {{isRpSt(scope.row.originName,scope.row.reportStatus)}}
+            <span v-if="isRpSt(scope.row.originName,scope.row.reportStatus)" v-html="isRpSt(scope.row.originName,scope.row.reportStatus)">
             </span>
           </div>
         </template>
@@ -49,9 +48,9 @@
       <el-table-column prop="webchartStatus" header-align="center" align="center" label="Chart监控">
         <template slot-scope="scope">
           <div>
-            <span v-if="isChSt(scope.row.originName,scope.row.webchartStatus)" :class="[isChSt(scope.row.originName,scope.row.webchartStatus) ? 'label-success' : 'label-danger']">{{
-              isChSt(scope.row.originName,scope.row.webchartStatus)
-              }}</span>
+            <span v-if="isChSt(scope.row.originName,scope.row.webchartStatus)" v-html="isChSt(scope.row.originName,scope.row.webchartStatus)">
+
+            </span>
           </div>
         </template>
 
@@ -59,22 +58,22 @@
       <el-table-column prop="debugStatus" header-align="center" align="center" label="调试状态">
         <template slot-scope="scope">
           <div>
-            <span v-if="isDgSt(scope.row.originName,scope.row.debugStatus)" :class="[isDgSt(scope.row.originName,scope.row.debugStatus) ? 'label-success' : 'label-danger']">
-              {{isDgSt(scope.row.originName,scope.row.debugStatus)}}
+            <span v-if="isDgSt(scope.row.originName,scope.row.debugStatus)" v-html="isDgSt(scope.row.originName,scope.row.debugStatus)">
+
             </span>
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="addTime"
-        header-align="center"
-        align="center"
-        label="创建时间">
+      <el-table-column prop="addTime" header-align="center" align="center" label="创建时间">
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" circle size="small" @click="addOrUpdateHandle(scope.row.fileId)">启动</el-button>
-          <el-button type="info" icon="el-icon-download" circle size="small" @click="addOrUpdateHandle(scope.row.fileId)">下载</el-button>
+          <div>
+            <el-button @click="clickBtn(scope.row.originName,scope.row.status,scope.row.fileId)" v-html="isBtn(scope.row.originName,scope.row.status,scope.row.fileId)">
+            </el-button>
+          </div>
+<!--          <el-button type="primary" circle size="small" @click="addOrUpdateHandle(scope.row.fileId)">启动</el-button>-->
+<!--          <el-button type="info" icon="el-icon-download" circle size="small" @click="addOrUpdateHandle(scope.row.fileId)">下载</el-button>-->
 <!--          <el-button type="primary" icon="el-icon-edit" size="small" @click="addOrUpdateHandle(scope.row.fileId)">修改</el-button>-->
 <!--      <el-button type="danger" icon="el-icon-delete" size="small" @click="deleteHandle(scope.row.fileId)">删除</el-button>-->
         </template>
@@ -130,25 +129,25 @@
       },
       isStatus(name, status){
         if (status === 0) {
-          return '创建成功';
+          return '<span class="label-success">创建成功</span>';
         } else if (status === 1) {
-          return '正在运行';
+          return '<span class="label-success">正在运行</span>';
         } else if (status === 2) {
           if(name.indexOf('.jmx') != -1) {
-            return '同步成功';
+            return '<span class="label-success">同步成功</span>';
           }
-          return '执行成功';
+          return '<span class="label-success">执行成功</span>';
         } else if (status === 3) {
-          return '出现异常';
+          return '<span class="label-danger">出现异常</span>';
         }
       },
       isChSt(name, status){
         if(name.indexOf('.jmx') != -1){
           console.log('======status',status)
           if (status === 0){
-            return '启用';
+            return '<span class="label-success">启用</span>';
           } else if (status === 1) {
-            return '禁止';
+            return '<span class="label-danger">禁 止</span>';
           }
         }
 
@@ -157,9 +156,9 @@
         if(name.indexOf('.jmx') != -1){
           console.log('======status',status)
           if (status === 0){
-            return '启用';
+            return '<span class="label-success">启用</span>';
           } else if (status === 1) {
-            return '禁止';
+            return '<span class="label-danger">禁 止</span>';
           }
         }
       },
@@ -167,11 +166,66 @@
         if(name.indexOf('.jmx') != -1){
           console.log('======status',status)
           if (status === 0){
-            return '启用';
+            return '<span class="label-success">启用</span>';
           } else if (status === 1) {
-            return '禁止';
+            return '<span class="label-danger">禁 止</span>';
           }
         }
+
+      },
+      isBtn(name, status,id){
+        console.log("----------id信息--------", id)
+        var btn = '';
+        if(name.indexOf('.jmx') == -1){
+          btn = '<span class="label-success">同步文件</span>'
+        }else{
+          if  (status == 1) {
+            btn ='<span class="label-danger">停止</span>'
+          } else {
+            btn ='<span class="label-success">启动</span>'
+          }
+        }
+        return btn;
+      },
+      clickBtn(name, status,id){
+        if(name.indexOf('.jmx') == -1){
+          this.synchronizeFile(id)
+        }else{
+          if  (status == 1) {
+            this.stopOnce(id)
+          } else {
+            this.runOnce(id)
+          }
+        }
+      },
+      runOnce(fileIds){
+        console.log('==========)',fileIds)
+        if (!fileIds) {
+              return;
+            }
+            var postURL = "test/stressFile/runOnce";
+            // if(slaveIds){
+            //   postURL = "test/stressFile/runOnce/"+slaveIds;
+            // }
+            $.get(baseURL + "test/stressSlave/list/enableTotal", function (r) {
+              if (fileIds || r.total < 2){
+                $.ajax({
+                  type: "POST",
+                  url: baseURL + postURL,
+                  contentType: "application/json",
+                  data: JSON.stringify(numberToArray(fileIds)),
+                  success: function (r) {
+                    if (r.code == 0) {
+                      vm.reload();
+                      alert(r.msg, function () {
+                      });
+                    }
+                  }
+                });
+              } else {
+                //vm.getSlave(fileIds);
+              }
+            });
 
       },
       // // 获取数据列表
@@ -280,11 +334,45 @@
           })
         })
       }
+
+
     },
+
+
     mounted () {
       this.getDataList()
     }
   }
+
+  // function runOnce(fileIds, slaveIds) {
+  //   if (!fileIds) {
+  //     return;
+  //   }
+  //   var postURL = "test/stressFile/runOnce";
+  //   if(slaveIds){
+  //     postURL = "test/stressFile/runOnce/"+slaveIds;
+  //   }
+  //   $.get(baseURL + "test/stressSlave/list/enableTotal", function (r) {
+  //     if (slaveIds || r.total < 2){
+  //       $.ajax({
+  //         type: "POST",
+  //         url: baseURL + postURL,
+  //         contentType: "application/json",
+  //         data: JSON.stringify(numberToArray(fileIds)),
+  //         success: function (r) {
+  //           if (r.code == 0) {
+  //             vm.reload();
+  //             alert(r.msg, function () {
+  //             });
+  //           }
+  //         }
+  //       });
+  //     } else {
+  //       vm.getSlave(fileIds);
+  //     }
+  //   });
+  //
+  // }
 </script>
 <style>
   .label-success {
