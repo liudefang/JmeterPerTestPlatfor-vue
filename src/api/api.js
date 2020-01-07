@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const test_url = 'http://10.3.20.170:8081/renren-fast';
+export const test_url = 'http://localhost:8081/renren-fast';
 
 // 测试用例
 export const getPerTestCase = (headers, params) => {
@@ -18,8 +18,12 @@ export const getPerTestSlave = (headers, params) => {
 }
 
 // 新增分布式节点
-export const addSlave = (headers, params) => {
+export const addTestSlave = (headers, params) => {
   return axios.post(`${test_url}/performance/performanceslave/save`, params, {headers}).then(data => data.data);
-}
+};
 
+// 新增分布式节点
+export const updateTestSlave = (headers, params) => {
+  return axios.post(`${test_url}/performance/performanceslave/update`, params, {headers}).then(data => data.data);
+}
 

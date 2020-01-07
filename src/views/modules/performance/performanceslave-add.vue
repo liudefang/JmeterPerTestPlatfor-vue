@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
+    :title="'新增'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-  import {addSlave} from '../../../api/api'
+  import {addTestSlave} from '../../../api/api'
 
   export default {
     data () {
@@ -91,7 +91,7 @@
       }
     },
     methods: {
-      init () {
+      init (id) {
         this.dataForm.slaveId = id || 0
         this.visible = true
         this.$nextTick(() => {
@@ -125,43 +125,24 @@
       dataFormSubmit () {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            // this.$http({
-            //   url: this.$http.adornUrl(`/performance/performanceslave/${!this.dataForm.slaveId ? 'save' : 'update'}`),
-            //   method: 'post',
-              // data: this.$http.adornData({
-              //   'slaveId': this.dataForm.slaveId || undefined,
-              //   'slaveName': this.dataForm.slaveName,
-              //   'ip': this.dataForm.ip,
-              //   'jmeterPort': this.dataForm.jmeterPort,
-              //   'userName': this.dataForm.userName,
-              //   'passwd': this.dataForm.passwd,
-              //   'sshPort': this.dataForm.sshPort,
-              //   'homeDir': this.dataForm.homeDir,
-              //   'status': this.dataForm.status,
-              //   'weight': this.dataForm.weight,
-              //   'addTime': this.dataForm.addTime,
-              //   'addBy': this.dataForm.addBy,
-              //   'updateTime': this.dataForm.updateTime,
-              //   'updateBy': this.dataForm.updateBy
-              // })
             let self = this;
             let params = {
               slaveId: self.dataForm.slaveId || undefined,
-              slaveName: self.slaveName,
+              slaveName: self.dataForm.slaveName,
               ip: self.dataForm.ip,
-              jmeterPort: self.jmeterPort,
-              userName: self.userName,
-              passwd: self.passwd,
-              sshPort: self.sshPort,
-              homeDir: self.homeDir,
-              status: self.status,
-              weight: self.weight
+              jmeterPort: self.dataForm.jmeterPort,
+              userName: self.dataForm.userName,
+              passwd: self.dataForm.passwd,
+              sshPort: self.dataForm.sshPort,
+              homeDir: self.dataForm.homeDir,
+              status: self.dataForm.status,
+              weight: self.dataForm.weight
             };
             let headers = {token: self.$cookie.get('token')};
-            addSlave(headers, params).then((data) => {
+            addTestSlave(headers, params).then((data) => {
               if (data && data.code === 0) {
                 this.$message({
-                  message: '操作成功',
+                  message: '新增成功',
                   type: 'success',
                   duration: 1500,
                   onClose: () => {

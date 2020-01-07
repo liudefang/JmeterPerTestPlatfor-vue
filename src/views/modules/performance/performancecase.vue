@@ -33,12 +33,7 @@
 <!--          </div>-->
         </template>
       </el-table-column>
-      <el-table-column
-        prop="project"
-        header-align="center"
-        align="center"
-        label="所属项目">
-      </el-table-column>
+      <el-table-column prop="project" header-align="center" align="center" label="所属项目"></el-table-column>
       <el-table-column
         prop="module"
         header-align="center"

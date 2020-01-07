@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
+    :title="'修改'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
@@ -37,6 +37,8 @@
 </template>
 
 <script>
+  import {updateTestSlave} from "../../../api/api";
+
   export default {
     data () {
       return {
@@ -101,6 +103,7 @@
               params: this.$http.adornParams()
             }).then(({data}) => {
               if (data && data.code === 0) {
+                this.dataForm.slaveId = data.performanceSlave.slaveId
                 this.dataForm.slaveName = data.performanceSlave.slaveName
                 this.dataForm.ip = data.performanceSlave.ip
                 this.dataForm.jmeterPort = data.performanceSlave.jmeterPort
@@ -123,29 +126,24 @@
       dataFormSubmit () {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/performance/performanceslave/${!this.dataForm.slaveId ? 'save' : 'update'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'slaveId': this.dataForm.slaveId || undefined,
-                'slaveName': this.dataForm.slaveName,
-                'ip': this.dataForm.ip,
-                'jmeterPort': this.dataForm.jmeterPort,
-                'userName': this.dataForm.userName,
-                'passwd': this.dataForm.passwd,
-                'sshPort': this.dataForm.sshPort,
-                'homeDir': this.dataForm.homeDir,
-                'status': this.dataForm.status,
-                'weight': this.dataForm.weight,
-                'addTime': this.dataForm.addTime,
-                'addBy': this.dataForm.addBy,
-                'updateTime': this.dataForm.updateTime,
-                'updateBy': this.dataForm.updateBy
-              })
-            }).then(({data}) => {
+            let self = this;
+            let params = {
+              slaveId: self.dataForm.slaveId || undefined,
+              slaveName: self.dataForm.slaveName,
+              ip: self.dataForm.ip,
+              jmeterPort: self.dataForm.jmeterPort,
+              userName: self.dataForm.userName,
+              passwd: self.dataForm.passwd,
+              sshPort: self.dataForm.sshPort,
+              homeDir: self.dataForm.homeDir,
+              status: self.dataForm.status,
+              weight: self.dataForm.weight
+            };
+            let headers = {token: self.$cookie.get('token')};
+            updateTestSlave(headers, params).then((data) => {
               if (data && data.code === 0) {
                 this.$message({
-                  message: '操作成功',
+                  message: '修改成功',
                   type: 'success',
                   duration: 1500,
                   onClose: () => {

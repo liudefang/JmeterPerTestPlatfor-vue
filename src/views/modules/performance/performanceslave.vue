@@ -7,6 +7,7 @@
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('performance:performanceslave:save')" type="primary" @click="addSlaveHandle()">新增</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:update')" type="primary" @click="updateSlaveHandle()" :disabled="dataListSelections.length <= 0">修改</el-button>
         <el-button v-if="isAuth('performance:performanceslave:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -29,17 +30,6 @@
         </template>
       </el-table-column>
       <el-table-column prop="weight" header-align="center" align="center" label="slave节点机的权重(%)"></el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-<!--          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.slaveId)">修改</el-button>-->
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.slaveId)">删除</el-button>
-        </template>
-      </el-table-column>
     </el-table>
     <el-pagination
       @size-change="sizeChangeHandle"
@@ -51,12 +41,14 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addSlave" @refreshDataList="getDataList"></add-or-update>
+    <add-slave v-if="addSlaveVisible" ref="addSlave" @refreshDataList="getDataList"></add-slave>
+    <update-slave v-if="updateSlaveVisible" ref="updateSlave" @refreshDataList="getDataList"></update-slave>
   </div>
 </template>
 
 <script>
   import AddSlave from './performanceslave-add'
+  import UpdateSlave from './performanceslave-update'
   import {getPerTestSlave} from '../../../api/api'
   export default {
     data () {
@@ -70,11 +62,13 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addSlaveVisible: false,
+        updateSlaveVisible: false
       }
     },
     components: {
-      AddSlave
+      AddSlave,
+      UpdateSlave
     },
     activated () {
       this.getDataList()
@@ -124,11 +118,27 @@
         this.dataListSelections = val
       },
       // 新增 / 修改
-      addSlaveHandle () {
-        this.addOrUpdateVisible = true
+      addSlaveHandle (id) {
+        this.addSlaveVisible = true
         this.$nextTick(() => {
-          this.$refs.addSlave.init()
+          this.$refs.addSlave.init(id)
         })
+      },
+      updateSlaveHandle(id) {
+        var slaveId = id ? [id] : this.dataListSelections.map(item => {
+          return item.slaveId
+        })
+        this.updateSlaveVisible = true;
+        if(slaveId.length == 1){
+          this.$nextTick(() => {
+            this.$refs.updateSlave.init(slaveId)
+          })
+        }else {
+          this.$message({
+            message: '只能选择一个节点!',
+            duration: 1500
+          })
+        }
       },
       // 删除
       deleteHandle (id) {
