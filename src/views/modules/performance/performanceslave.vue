@@ -7,8 +7,14 @@
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('performance:performanceslave:save')" type="primary" @click="addSlaveHandle()">新增</el-button>
-        <el-button v-if="isAuth('performance:performanceslave:update')" type="primary" @click="updateSlaveHandle()" :disabled="dataListSelections.length <= 0">修改</el-button>
-        <el-button v-if="isAuth('performance:performanceslave:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:update')" type="primary" icon="el-icon-edit" @click="updateSlaveHandle()" :disabled="dataListSelections.length <= 0">修改</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:slaveStatusUpdate')" type="primary" icon="el-icon-edit" @click="batchUpdateStatus(1)" :disabled="dataListSelections.length <= 0">启用</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:slaveRestart')" type="primary" icon="el-icon-edit" @click="batchRestart()" :disabled="dataListSelections.length <= 0">重启</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:slaveStatusUpdate')" type="primary" icon="el-icon-edit" @click="batchUpdateStatus(0)" :disabled="dataListSelections.length <= 0">禁用</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:slaveStatusUpdateForce')" type="primary" icon="el-icon-edit" @click="batchUpdateStatusForce(1)" :disabled="dataListSelections.length <= 0">手工启用</el-button>
+        <el-button type="primary" icon="el-icon-edit" @click="batchReload()" :disabled="dataListSelections.length <= 0">校准</el-button>
+        <el-button v-if="isAuth('performance:performanceslave:delete')" type="danger" icon="el-icon-delete" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+
       </el-form-item>
     </el-form>
     <el-table :data="dataList" border v-loading="dataListLoading" @selection-change="selectionChangeHandle" style="width: 100%;">
@@ -49,7 +55,7 @@
 <script>
   import AddSlave from './performanceslave-add'
   import UpdateSlave from './performanceslave-update'
-  import {getPerTestSlave} from '../../../api/api'
+  import {getPerTestSlave, slaveStatusRestart, slaveUpdateStatus, slaveUpdateStatusForce} from '../../../api/api'
   export default {
     data () {
       return {
@@ -76,7 +82,7 @@
     methods: {
       isStatus(status){
         if (status === 0) {
-          return '<span class="label-info">警用</span>';
+          return '<span class="label-info">禁用</span>';
         } else if (status === 1) {
           return '<span class="label-success">启用</span>';
         } else if (status === 2) {
@@ -140,6 +146,131 @@
           })
         }
       },
+      // 启用
+      batchUpdateStatus(value) {
+        if (value == 1){
+          this.$message({
+            message: '正在启用中...',
+            type: 'success',
+            duration: 2000,
+            onClose: () => {
+              this.getDataList()
+            }
+          })
+          } else{
+          this.$message({
+            message: '正在禁用中...',
+            type: 'error',
+            duration: 2000,
+            onClose: () => {
+              this.getDataList()
+            }
+          })
+        }
+        var slaveIds = this.dataListSelections.map(item => {
+          return item.slaveId
+        })
+        if (slaveIds == null){
+          return;
+        }
+        let params = new FormData();
+        params.append("slaveIds[]", slaveIds);
+        params.append("status", value);
+        let headers = {
+          token: this.$cookie.get('token')};
+        slaveUpdateStatus(headers, params).then((data) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      },
+
+      // 手工启动
+      batchUpdateStatusForce(value){
+        var slaveIds = this.dataListSelections.map(item => {
+          return item.slaveId
+        })
+        if (slaveIds == null){
+          return;
+        }
+        let params = new FormData();
+        params.append("slaveIds[]", slaveIds);
+        params.append("status", value);
+        let headers = {
+          token: this.$cookie.get('token')};
+        slaveUpdateStatusForce(headers, params).then((data) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      },
+
+      // 重启
+      batchRestart(){
+        var slaveIds = this.dataListSelections.map(item => {
+          return item.slaveId
+        })
+        if (slaveIds == null){
+          return;
+        }
+        let params = new FormData();
+        params.append("slaveIds[]", slaveIds);
+        let headers = {
+          token: this.$cookie.get('token')};
+        slaveStatusRestart(headers, params).then((data) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      },
+      // 校准
+      batchReload(){
+        let params = "";
+        let headers = {
+          token: this.$cookie.get('token')};
+        slaveStatusRestart(headers, params).then((data) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      },
+      }
       // 删除
       deleteHandle (id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {

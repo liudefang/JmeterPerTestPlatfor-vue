@@ -17,13 +17,31 @@ export const getPerTestSlave = (headers, params) => {
   return axios.get(`${test_url}/performance/performanceslave/list`, {params: params, headers:headers}).then(data => data.data);
 }
 
+// 获取分布式节点信息
+export const getSlaveInfo = (headers, params) => {
+  return axios.get(`${test_url}/performance/performanceslave/info`, {params: params, headers:headers}).then(data => data.data);
+}
 // 新增分布式节点
 export const addTestSlave = (headers, params) => {
   return axios.post(`${test_url}/performance/performanceslave/save`, params, {headers}).then(data => data.data);
 };
 
-// 新增分布式节点
+// 编辑分布式节点
 export const updateTestSlave = (headers, params) => {
   return axios.post(`${test_url}/performance/performanceslave/update`, params, {headers}).then(data => data.data);
 }
 
+// 启用分布式节点
+export const slaveUpdateStatus = (headers, params) => {
+  return axios.post(`${test_url}/performance/performanceslave/batchUpdateStatus`, params, {headers}).then(data => data.data);
+}
+
+// 手工启用分布式节点
+export const slaveUpdateStatusForce = (headers, params) => {
+  return axios.post(`${test_url}/performance/performanceslave/batchUpdateStatusForce`, params, {headers}).then(data => data.data);
+}
+
+// 重启分布式节点
+export const slaveStatusRestart = (headers, params) => {
+  return axios.post(`${test_url}/performance/performanceslave/batchRestart`, params, {headers}).then(data => data.data);
+}

@@ -69,12 +69,12 @@
           jmeterPort: [
             { required: true, message: 'Jmeter链接端口号不能为空', trigger: 'blur' }
           ],
-          userName: [
-            { required: true, message: '节点机用户名不能为空', trigger: 'blur' }
-          ],
-          passwd: [
-            { required: true, message: '节点机密码不能为空', trigger: 'blur' }
-          ],
+          // userName: [
+          //   { required: true, message: '节点机用户名不能为空', trigger: 'blur' }
+          // ],
+          // passwd: [
+          //   { required: true, message: '节点机密码不能为空', trigger: 'blur' }
+          // ],
           sshPort: [
             { required: true, message: 'ssh链接端口号不能为空', trigger: 'blur' }
           ],
