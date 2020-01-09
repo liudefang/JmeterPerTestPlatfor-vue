@@ -45,3 +45,13 @@ export const slaveUpdateStatusForce = (headers, params) => {
 export const slaveStatusRestart = (headers, params) => {
   return axios.post(`${test_url}/performance/performanceslave/batchRestart`, params, {headers}).then(data => data.data);
 }
+
+// 校准分布式节点
+export const slaveReload = (headers, params) => {
+  return axios.post(`${test_url}/performance/performanceslave/batchReload`, params, {headers}).then(data => data.data);
+}
+
+// 获取线程组的信息
+export  const getThreadSetInfo = (headers, params) => {
+  return axios.get(`${test_url}/performance/performancecasefile/info/`+ params, {headers:headers}).then(data => data.data);
+}

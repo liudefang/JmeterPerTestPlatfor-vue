@@ -55,7 +55,13 @@
 <script>
   import AddSlave from './performanceslave-add'
   import UpdateSlave from './performanceslave-update'
-  import {getPerTestSlave, slaveStatusRestart, slaveUpdateStatus, slaveUpdateStatusForce} from '../../../api/api'
+  import {
+    getPerTestSlave,
+    slaveReload,
+    slaveStatusRestart,
+    slaveUpdateStatus,
+    slaveUpdateStatusForce
+  } from '../../../api/api'
   export default {
     data () {
       return {
@@ -255,7 +261,7 @@
         let params = "";
         let headers = {
           token: this.$cookie.get('token')};
-        slaveStatusRestart(headers, params).then((data) => {
+        slaveReload(headers, params).then((data) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
@@ -270,7 +276,7 @@
           }
         })
       },
-      }
+
       // 删除
       deleteHandle (id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {

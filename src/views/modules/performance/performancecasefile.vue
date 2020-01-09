@@ -9,6 +9,7 @@
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('performance:performancecasefile:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button v-if="isAuth('performance:performancecasefile:delete')" type="danger" icon="el-icon-delete" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('performance:performancethreadset:list')" type="primary" @click="threadSetHandle()" :disabled="dataListSelections.length <= 0">线程组</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -79,23 +80,18 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="sizeChangeHandle"
-      @current-change="currentChangeHandle"
-      :current-page="pageIndex"
-      :page-sizes="[10, 20, 30, 50]"
-      :page-size="pageSize"
-      :total="totalPage"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    <el-pagination @size-change="sizeChangeHandle" @current-change="currentChangeHandle" :current-page="pageIndex" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" :total="totalPage" layout="total, sizes, prev, pager, next, jumper"></el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <!-- 线程组弹窗-->
+    <thread-set v-if="threadSetVisible" ref="threadSet" @refreshDataList="getDataList"></thread-set>
   </div>
 </template>
 
 <script>
   import AddOrUpdate from './performancecasefile-update';
-  import {getPerTestCaseInfo} from '../../../api/api'
+  import ThreadSet from './performancethreadset';
+  import {getPerTestCase, getPerTestCaseInfo, getPerTestSlave, getThreadSetInfo} from '../../../api/api'
   // import * as t from '@/utils/test.js';
   export default {
     data () {
@@ -109,11 +105,13 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        threadSetVisible: false
       }
     },
     components: {
-      AddOrUpdate
+      AddOrUpdate,
+      ThreadSet
     },
     activated () {
       this.getDataList()
@@ -123,10 +121,12 @@
       isJmx(val){
         console.log('======val',val)
         if(val.indexOf('.jmx') != -1){
+
           return true
         }
-        // val.indexOf('.jmx') != -1 ? true : false
+
       },
+
       isStatus(name, status){
         if (status === 0) {
           return '<span class="label-success">创建成功</span>';
@@ -185,6 +185,7 @@
             btn ='<span class="label-success">启动</span>'
           }
         }
+
         return btn;
       },
       clickBtn(name, status,id){
@@ -304,11 +305,80 @@
           this.$refs.addOrUpdate.init(id)
         })
       },
+      // 线程组
+      threadSetHandle() {
+        var fileIds = this.dataListSelections.map(item => {
+          return item.fileId
+        })
+        var fileNames = this.dataListSelections.map(item => {
+          return item.originName
+        })
+        var status = this.dataListSelections.map(item => {
+          return item.status
+        })
+        if(fileIds.length == 1){
+          var fileId = fileIds[0];
+
+          let params = fileId;
+           let headers = {
+             token: this.$cookie.get('token')};
+            var fileName = fileNames[0];
+           getThreadSetInfo(headers, params).then((data) => {
+             if (fileName.indexOf('.jmx') == -1) {
+               this.$message({
+                 message: fileName + '非脚本文件，不能修改线程组',
+                 type: 'error',
+                 duration: 1500,
+                 onClose: () => {
+                   this.getDataList()
+                 }
+               })
+               this.dataList = data.page.list
+               this.totalPage = data.page.totalCount
+             } else if(status == 1){
+               this.$message({
+                 message: fileName + '正在运行，禁止修改线程组',
+                 type: 'error',
+                 duration: 1500,
+                 onClose: () => {
+                   this.getDataList()
+                 }
+               })
+             }
+             else if(fileIds.length-1 == 0){
+
+               let self = this;
+               let params = {page: self.pageIndex, limit: self.pageSize, key: self.dataForm.key};
+               let headers = {token: self.$cookie.get('token')};
+               getPerTestSlave(headers, params).then((data) => {
+                 if (data && data.code === 0) {
+                   this.dataList = data.page.list
+                   this.totalPage = data.page.totalCount
+                 } else {
+                   this.dataList = []
+                   this.totalPage = 0
+                 }
+                 this.dataListLoading = false
+               })
+
+             }
+             this.dataListLoading = false
+           })
+
+        }else {
+          this.$message({
+            message: '只能选择一个节点!',
+            duration: 1500
+          })
+        }
+
+      },
       // 删除
       deleteHandle (id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {
           return item.fileId
         })
+
         this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

@@ -39,7 +39,7 @@ const mainRoutes = {
     //{ path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } }
     { path: '/performance-performancecase', component: _import('modules/performance/performancecase'), name: 'performancecase', meta: { title: '性能测试用例', isTab: true } },
     { path: '/performance/performancecase/caseId=:case_id', component: _import('modules/performance/performancecasefile'), name: '测试用例详情', meta: { title: '测试用例详情' } },
-    //{ path: '/performance/performancecasefile', component: _import('modules/performance/performancecasefile'), name: 'performancecasefile', meta: { title: '测试用例文件' } },
+    { path: '/performance/performanceslave/list', component: _import('modules/performance/performanceslave'), name: '线程组', meta: { title: '分布式节点',isTab: true } },
   ],
   beforeEnter (to, from, next) {
     let token = Vue.cookie.get('token')
