@@ -17,10 +17,9 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="setId" header-align="center" align="center" label="配置ID"></el-table-column>
-      <el-table-column prop="parentId" header-align="center" align="center" label="所属ID，一级配置为0">
-      </el-table-column>
+      <el-table-column prop="setId" header-align="center" align="center" label="配置项ID"></el-table-column>
       <el-table-column prop="name" header-align="center" align="center" label="配置名称"></el-table-column>
+      <el-table-column prop="parentName" header-align="center" align="center" label="上级配置"></el-table-column>
       <el-table-column prop="key" header-align="center" align="center" label="配置项"></el-table-column>
       <el-table-column prop="value" header-align="center" align="center" label="配置内容"></el-table-column>
       <el-table-column prop="type" header-align="center" align="center" label="类型   0：脚本   1：线程组   2：配置"></el-table-column><el-table-column

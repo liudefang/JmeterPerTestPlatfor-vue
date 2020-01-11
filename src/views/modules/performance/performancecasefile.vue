@@ -335,32 +335,23 @@
                })
                this.dataList = data.page.list
                this.totalPage = data.page.totalCount
-             } else if(status == 1){
-               this.$message({
-                 message: fileName + '正在运行，禁止修改线程组',
-                 type: 'error',
-                 duration: 1500,
-                 onClose: () => {
-                   this.getDataList()
-                 }
-               })
-             }
-             else if(fileIds.length-1 == 0){
+             } else {
+               if(status == 1){
+                 this.$message({
+                   message: fileName + '正在运行，禁止修改线程组',
+                   type: 'error',
+                   duration: 1500,
+                   onClose: () => {
+                     this.getDataList()
+                   }
+                 })
+               }
+               else if(fileName.indexOf('.jmx') != -1 && fileIds.length-1 == 0){
+                 alert("到这里了");
+                 alert(fileId)
+                 this.$router.push({path:`/performance/performancethreadset/list/${fileId}`})
 
-               let self = this;
-               let params = {page: self.pageIndex, limit: self.pageSize, key: self.dataForm.key};
-               let headers = {token: self.$cookie.get('token')};
-               getPerTestSlave(headers, params).then((data) => {
-                 if (data && data.code === 0) {
-                   this.dataList = data.page.list
-                   this.totalPage = data.page.totalCount
-                 } else {
-                   this.dataList = []
-                   this.totalPage = 0
-                 }
-                 this.dataListLoading = false
-               })
-
+               }
              }
              this.dataListLoading = false
            })
