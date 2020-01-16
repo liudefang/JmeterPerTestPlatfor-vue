@@ -1,0 +1,44 @@
+<template>
+
+</template>
+
+<script>
+  var json = [
+    {"setId":"c3628b6cd3a044088b4f41573eaad220","parentId":"0","parentName":null,"name":"登录.jmx","key":"运行模式","value":"TestPlan.tearDown_on_shutdown","type":0,"explain":"所属用例:登录性能;  对应脚本:20191205162830967/case20191205162830709.jmx","orderNum":0,"fileId":3,"open":null,"list":null},
+    {"setId":"ea9b77672265477cad6f10060b3400e1","parentId":"c3628b6cd3a044088b4f41573eaad220","parentName":"登录.jmx","name":"jp@gc - Stepping Thread Group (deprecated)","key":"enabled","value":"true","type":1,"explain":"线程组类别:kg.apc.jmeter.threads.SteppingThreadGroup","orderNum":1,"fileId":3,"open":null,"list":null},
+    {"setId":"c02476a10d254128b01829cc39453eff","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"取样器报错后动作","key":"ThreadGroup.on_sample_error","value":"continue","type":2,"explain":"配置项","orderNum":2,"fileId":3,"open":null,"list":null},{"setId":"f2bbb7d7a3f94592a8c29ee359263523","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"线程组线程数","key":"ThreadGroup.num_threads","value":"10","type":2,"explain":"配置项","orderNum":3,"fileId":3,"open":null,"list":null},{"setId":"b957a1b69a50424daf2d5cb9cac1dcc0","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"初始等待时间(s)","key":"Threads initial delay","value":"0","type":2,"explain":"配置项","orderNum":4,"fileId":3,"open":null,"list":null},{"setId":"035b138581c948548ebe6bba9f4f791e","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"每次启动线程数","key":"Start users count","value":"10","type":2,"explain":"配置项","orderNum":5,"fileId":3,"open":null,"list":null},{"setId":"94b7ee963e4f4347a7617007767b9ba8","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"初次启动线程数","key":"Start users count burst","value":"0","type":2,"explain":"配置项","orderNum":6,"fileId":3,"open":null,"list":null},{"setId":"5ba1a685bd7e43c79427948e6089074b","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"每次启动线程数间隔时间(s)","key":"Start users period","value":"30","type":2,"explain":"配置项","orderNum":7,"fileId":3,"open":null,"list":null},{"setId":"4e6ab9c785074290b0290ce251898c34","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"每次停止线程数","key":"Stop users count","value":"5","type":2,"explain":"配置项","orderNum":8,"fileId":3,"open":null,"list":null},{"setId":"e478c51782524eda8ee22a6ded539ccc","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"每次停止线程数间隔时间(s)","key":"Stop users period","value":"1","type":2,"explain":"配置项","orderNum":9,"fileId":3,"open":null,"list":null},{"setId":"76aeca97f50449ea9c19cc6b0ba3a871","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"峰值压力持续时间(s)","key":"flighttime","value":"1800","type":2,"explain":"配置项","orderNum":10,"fileId":3,"open":null,"list":null},{"setId":"56b470c9b9284590b1b4e5973ee60321","parentId":"ea9b77672265477cad6f10060b3400e1","parentName":"jp@gc - Stepping Thread Group (deprecated)","name":"线程启动完毕时间/加压时间(s)","key":"rampUp","value":"5","type":2,"explain":"配置项","orderNum":11,"fileId":3,"open":null,"list":null}];
+  function format(json){
+    var ret = [], o = {};
+
+    function add(arr, data){
+      var obj = {
+        "setId": data.setId,
+        "parentId": data.parentId,
+        "parentName": data.parentName,
+        "name": data.name,
+        "key": data.key,
+        "value": data.value,
+        "type": data.type,
+        "explain": data.explain,
+        "list": []
+      };
+      o[data.setId] = obj;
+      arr.push(obj);
+    }
+
+    json.forEach(x => {
+      if(o[x.parentId]){
+        add(o[x.parentId].list, x);
+      }else{
+        add(ret, x);
+      }
+    });
+
+    return ret;
+  }
+  console.log(format(json));
+</script>
+
+<style scoped>
+
+</style>

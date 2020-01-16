@@ -347,8 +347,6 @@
                  })
                }
                else if(fileName.indexOf('.jmx') != -1 && fileIds.length-1 == 0){
-                 alert("到这里了");
-                 alert(fileId)
                  this.$router.push({path:`/performance/performancethreadset/list/${fileId}`})
 
                }

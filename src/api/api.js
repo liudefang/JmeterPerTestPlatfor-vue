@@ -55,3 +55,8 @@ export const slaveReload = (headers, params) => {
 export  const getThreadSetInfo = (headers, params) => {
   return axios.get(`${test_url}/performance/performancecasefile/info/`+ params, {headers:headers}).then(data => data.data);
 }
+
+// 获取测试报告列表的信息
+export  const getTestRepList = (headers, params) => {
+  return axios.get(`${test_url}/performance/performancecasereports/list/`, {params: params, headers:headers}).then(data => data.data);
+}

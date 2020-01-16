@@ -6,61 +6,40 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('performance:performancethreadset:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('performance:performancethreadset:update')" type="primary" @click="addOrUpdateHandle()">修改</el-button>
         <el-button v-if="isAuth('performance:performancethreadset:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
+    <div>
     <el-table
       :data="dataList"
+      style="width: 100%;"
+      row-key="setId"
       border
-      v-loading="dataListLoading"
-      @selection-change="selectionChangeHandle"
-      style="width: 100%;">
-      <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="setId" header-align="center" align="center" label="配置项ID"></el-table-column>
+      default-expand-all
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      @selection-change="selectionChangeHandle">
       <el-table-column prop="name" header-align="center" align="center" label="配置名称"></el-table-column>
+      <el-table-column prop="setId" header-align="center" align="center" sortable label="配置项ID"></el-table-column>
       <el-table-column prop="parentName" header-align="center" align="center" label="上级配置"></el-table-column>
       <el-table-column prop="key" header-align="center" align="center" label="配置项"></el-table-column>
       <el-table-column prop="value" header-align="center" align="center" label="配置内容"></el-table-column>
-      <el-table-column prop="type" header-align="center" align="center" label="类型   0：脚本   1：线程组   2：配置"></el-table-column><el-table-column
-        prop="explain"
-        header-align="center"
-        align="center"
-        label="配置说明">
-      </el-table-column>
-      <el-table-column
-        prop="orderNum"
-        header-align="center"
-        align="center"
-        label="排序">
-      </el-table-column>
-      <el-table-column
-        prop="fileId"
-        header-align="center"
-        align="center"
-        label="所属脚本文件ID">
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
+      <el-table-column prop="type" header-align="center" align="center" label="类型">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.setId)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.setId)">删除</el-button>
+          <div>
+            <span v-if="isType(scope.row.type)" v-html="isType(scope.row.type)">
+            </span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="explain" header-align="center" align="center" label="配置说明"></el-table-column>
+      <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.setId)">同步配置</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="sizeChangeHandle"
-      @current-change="currentChangeHandle"
-      :current-page="pageIndex"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageSize"
-      :total="totalPage"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    </div>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
   </div>
@@ -75,12 +54,10 @@
           key: ''
         },
         dataList: [],
-        pageIndex: 1,
-        pageSize: 10,
-        totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+
       }
     },
     components: {
@@ -90,6 +67,17 @@
       this.getDataList()
     },
     methods: {
+      isType(type) {
+        if (type == 0){
+          return '<span class="label-success">脚本</span>';
+        }
+        if (type == 1) {
+          return '<span class="label-success">线程组</span>';
+        }
+        if (type == 2) {
+          return '<span class="label-success">配置项</span>';
+        }
+      },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
@@ -102,16 +90,49 @@
             'key': this.dataForm.key
           })
         }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.dataList = data.page.list
-            this.totalPage = data.page.totalCount
+          console.log('=======datalist',data)
+          if (data && data.length > 0) {
+            this.data = data
+            this.dataList = this.format(this.data)
+
+            console.log('=======this.dataList',this.dataList)
           } else {
             this.dataList = []
-            this.totalPage = 0
           }
           this.dataListLoading = false
         })
       },
+
+    format(json){
+    var ret = [], o = {};
+
+    function add(arr, data){
+      var obj = {
+        "setId": data.setId,
+        "name": data.name,
+        "parentId": data.parentId,
+        "parentName": data.parentName,
+        "key": data.key,
+        "value": data.value,
+        "type": data.type,
+        "explain": data.explain,
+        "children": []
+      };
+      o[data.setId] = obj;
+      arr.push(obj);
+    }
+
+    json.forEach(x => {
+      if(o[x.parentId]){
+        add(o[x.parentId].children, x);
+      }else{
+        add(ret, x);
+      }
+    });
+
+    return ret;
+  },
+
       // 每页数
       sizeChangeHandle (val) {
         this.pageSize = val
@@ -129,9 +150,19 @@
       },
       // 新增 / 修改
       addOrUpdateHandle (id) {
+        var setId = id ? [id] : this.dataListSelections.map(item => {
+          return item.setId
+        })
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
+          if(setId.length == 1){
+            this.$refs.addOrUpdate.init(setId)
+          } else {
+            this.$message({
+              message: '只能选择一条线程组!',
+              duration: 1500
+            })
+          }
         })
       },
       // 删除
