@@ -39,8 +39,10 @@ const mainRoutes = {
     //{ path: '/demo-ueditor', component: _import('demo/ueditor'), name: 'demo-ueditor', meta: { title: 'demo-ueditor', isTab: true } }
     { path: '/performance-performancecase', component: _import('modules/performance/performancecase'), name: 'performancecase', meta: { title: '性能测试用例', isTab: true } },
     { path: '/performance/performancecase/caseId=:case_id', component: _import('modules/performance/performancecasefile'), name: '测试用例详情', meta: { title: '测试用例详情' } },
-    { path: '/performance/performancethreadset/', component: _import('modules/performance/performancethreadset'), name: '线程组', meta: { title: '线程组',isTab: true } },
+    { path: '/performance/performancecasereports/caseId=:case_id', component: _import('modules/performance/performancecasereports'), name: '测试报告', meta: { title: '测试报告',isTab: true } },
     { path: '/performance/performancethreadset/list/:id', component: _import('modules/performance/performancethreadset'), name: '线程组', meta: { title: '线程组',isTab: true } },
+    { path: '/performance/debugcasereports/caseId=:case_id', component: _import('modules/performance/debugcasereports'), name: '调试报告', meta: { title: '调试报告',isTab: true } },
+    { path: '/performance/performancecasefile/statInfo/:id', component: _import('modules/performance/echarts'), name: '测试监控', meta: { title: '测试监控',isTab: true } },
   ],
   beforeEnter (to, from, next) {
     let token = Vue.cookie.get('token')

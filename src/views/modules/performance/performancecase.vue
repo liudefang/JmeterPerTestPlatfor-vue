@@ -25,7 +25,6 @@
           <el-icon name="caseName"></el-icon>
           <router-link :to="{name: '测试用例详情', params: {case_id: scope.row.caseId}}">
               {{ scope.row.caseName }}
-
           </router-link>
 <!--          <div>-->
 <!--&lt;!&ndash;            {{ scope.row.caseName }}&ndash;&gt;-->

@@ -16,90 +16,15 @@
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
-      <el-table-column
-        type="selection"
-        header-align="center"
-        align="center"
-        width="50">
-      </el-table-column>
-      <el-table-column
-        prop="reportId"
-        header-align="center"
-        align="center"
-        label="">
-      </el-table-column>
-      <el-table-column
-        prop="caseId"
-        header-align="center"
-        align="center"
-        label="所关联的用例">
-      </el-table-column>
-      <el-table-column
-        prop="fileId"
-        header-align="center"
-        align="center"
-        label="所关联的用例文件">
-      </el-table-column>
-      <el-table-column
-        prop="originName"
-        header-align="center"
-        align="center"
-        label="测试报告名称">
-      </el-table-column>
-      <el-table-column
-        prop="reportName"
-        header-align="center"
-        align="center"
-        label="避免跨系统编码错误，随机化了结果文件名，存储了相对路径">
-      </el-table-column>
-      <el-table-column
-        prop="fileSize"
-        header-align="center"
-        align="center"
-        label="测试结果文件大小">
-      </el-table-column>
-      <el-table-column
-        prop="status"
-        header-align="center"
-        align="center"
-        label="状态  0：初始状态  1：正在运行  2：成功执行  3：运行出现异常">
-      </el-table-column>
-      <el-table-column
-        prop="remark"
-        header-align="center"
-        align="center"
-        label="描述">
-      </el-table-column>
-      <el-table-column
-        prop="addTime"
-        header-align="center"
-        align="center"
-        label="创建时间">
-      </el-table-column>
-      <el-table-column
-        prop="addBy"
-        header-align="center"
-        align="center"
-        label="提交用户id">
-      </el-table-column>
-      <el-table-column
-        prop="updateTime"
-        header-align="center"
-        align="center"
-        label="修改时间">
-      </el-table-column>
-      <el-table-column
-        prop="updateBy"
-        header-align="center"
-        align="center"
-        label="修改用户id">
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
+      <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+      <el-table-column prop="reportId" header-align="center" align="center" label="报告ID"></el-table-column>
+      <el-table-column prop="originName" header-align="center" align="center" label="测试报告名称"></el-table-column>
+      <el-table-column prop="remark" header-align="center" align="center" label="描述"></el-table-column>
+      <el-table-column prop="fileId" header-align="center" align="center" label="所关联的用例文件"></el-table-column>
+      <el-table-column prop="fileSize" header-align="center" align="center" label="测试结果文件大小"></el-table-column>
+      <el-table-column prop="status" header-align="center" align="center" label="状态"></el-table-column>
+      <el-table-column prop="addTime" header-align="center" align="center" label="创建时间"></el-table-column>
+      <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.reportId)">修改</el-button>
           <el-button type="text" size="small" @click="deleteHandle(scope.row.reportId)">删除</el-button>

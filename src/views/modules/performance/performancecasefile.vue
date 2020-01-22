@@ -7,7 +7,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('performance:performancecasefile:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('performance:performancecasefile:fileUpdate')" type="primary" @click="addOrUpdateHandle()">修改</el-button>
         <el-button v-if="isAuth('performance:performancecasefile:delete')" type="danger" icon="el-icon-delete" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
         <el-button v-if="isAuth('performance:performancethreadset:list')" type="primary" @click="threadSetHandle()" :disabled="dataListSelections.length <= 0">线程组</el-button>
       </el-form-item>
@@ -20,13 +20,28 @@
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
       <el-table-column prop="fileId" header-align="center" align="center" label="文件ID"></el-table-column>
-      <el-table-column prop="caseName" header-align="center" align="center" label="所关联的用例"></el-table-column>
+      <el-table-column prop="caseName" header-align="center" align="center" label="所关联的用例">
+        <template slot-scope="scope">
+          <el-icon name="caseName"></el-icon>
+          <span v-if="scope.row.originName.indexOf('.jmx') == -1" >{{ scope.row.caseName }}</span>
+          <span v-else-if="scope.row.originName.indexOf('.jmx') != -1 && scope.row.reportStatus == 1">
+            <router-link :to ="{name: '调试报告', params: {case_id: scope.row.caseId}}"> {{ scope.row.caseName }} </router-link>
+          </span>
+          <span v-else>
+            <router-link :to ="{name: '测试报告', params: {case_id: scope.row.caseId}}"> {{ scope.row.caseName }} </router-link>
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column prop="originName" header-align="center" align="center" label="文件名称">
         <template slot-scope="scope">
-          <div>
-            {{ scope.row.originName }}
-            <a v-if="isJmx(scope.row.originName)" :href="scope.row.url">77</a>
-          </div>
+          <el-icon name="originName"></el-icon>
+          <span v-if="scope.row.originName.indexOf('.jmx') == -1" >{{ scope.row.caseName }}</span>
+          <span v-else>
+            <router-link  :to="{name: '测试监控', params: {case_id: scope.row.caseId}}">
+              {{ scope.row.originName }}
+            </router-link >
+          </span>
+
         </template>
       </el-table-column>
       <el-table-column prop="status" header-align="center" align="center" label="状态">
@@ -91,7 +106,8 @@
 <script>
   import AddOrUpdate from './performancecasefile-update';
   import ThreadSet from './performancethreadset';
-  import {getPerTestCase, getPerTestCaseInfo, getPerTestSlave, getThreadSetInfo} from '../../../api/api'
+  import {getPerTestCase, getPerTestCaseInfo, getPerTestSlave, getSlaveEnable, getThreadSetInfo} from '../../../api/api'
+  import axios from 'axios'
   // import * as t from '@/utils/test.js';
   export default {
     data () {
@@ -123,6 +139,9 @@
         if(val.indexOf('.jmx') != -1){
 
           return true
+        }
+        else {
+          return false
         }
 
       },
@@ -188,6 +207,21 @@
 
         return btn;
       },
+      isRpLink(name,caseName,status) {
+        if(name.indexOf('.jmx') == -1 ){
+          return caseName
+        }
+        else {
+          if(status == 1){
+            return "<router-link :to ={name: '调试报告', params: {case_id: scope.row.caseId}}>" +caseName+ "</router-link>"
+
+          }
+          else {
+            return "<router-link :to ={name: '测试报告', params: {case_id: scope.row.caseId}}>" +caseName+ "</router-link>"
+          }
+        }
+
+      },
       clickBtn(name, status,id){
         if(name.indexOf('.jmx') == -1){
           this.synchronizeFile(id)
@@ -204,11 +238,15 @@
         if (!fileIds) {
               return;
             }
-            var postURL = "test/stressFile/runOnce";
+            var postURL = "performance/performancecasefile/runOnce";
             // if(slaveIds){
-            //   postURL = "test/stressFile/runOnce/"+slaveIds;
+            //   postURL = "performance/performancecasefile/runOnce/"+slaveIds;
             // }
-            $.get(baseURL + "test/stressSlave/list/enableTotal", function (r) {
+        let params = "";
+        let headers = {
+          token: this.$cookie.get('token')};
+          $.get(`http://localhost:8081/performance/performanceslave/list/enableTotal/?token=${this.$cookie.get('token')}`).then((data) => {
+              console.log("-------=data-======", data)
               if (fileIds || r.total < 2){
                 $.ajax({
                   type: "POST",
@@ -300,10 +338,22 @@
       },
       // 新增 / 修改
       addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
+        var fileIds = this.dataListSelections.map(item => {
+          return item.fileId
         })
+        if(fileIds.length == 1) {
+          var fileId = fileIds[0];
+          this.addOrUpdateVisible = true
+          this.$nextTick(() => {
+            this.$refs.addOrUpdate.init(fileId)
+          })
+        }else {
+          this.$message({
+            message: '只能选择一个节点!',
+            duration: 1500
+          })
+        }
+
       },
       // 线程组
       threadSetHandle() {

@@ -13,12 +13,10 @@
     <div>
     <el-table
       :data="dataList"
-      style="width: 100%;"
-      row-key="setId"
       border
-      default-expand-all
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      @selection-change="selectionChangeHandle">
+      v-loading="dataListLoading"
+      @selection-change="selectionChangeHandle"
+      style="width: 100%;">
       <el-table-column prop="name" header-align="center" align="center" label="配置名称"></el-table-column>
       <el-table-column prop="setId" header-align="center" align="center" sortable label="配置项ID"></el-table-column>
       <el-table-column prop="parentName" header-align="center" align="center" label="上级配置"></el-table-column>
@@ -103,35 +101,6 @@
         })
       },
 
-    format(json){
-    var ret = [], o = {};
-
-    function add(arr, data){
-      var obj = {
-        "setId": data.setId,
-        "name": data.name,
-        "parentId": data.parentId,
-        "parentName": data.parentName,
-        "key": data.key,
-        "value": data.value,
-        "type": data.type,
-        "explain": data.explain,
-        "children": []
-      };
-      o[data.setId] = obj;
-      arr.push(obj);
-    }
-
-    json.forEach(x => {
-      if(o[x.parentId]){
-        add(o[x.parentId].children, x);
-      }else{
-        add(ret, x);
-      }
-    });
-
-    return ret;
-  },
 
       // 每页数
       sizeChangeHandle (val) {
